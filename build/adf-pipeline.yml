@@ -1,0 +1,147 @@
+#adf-pipeline.yml substituir PROJECT
+
+trigger:
+  - none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Variáveis
+variables:
+
+  system.debug: true
+
+stages:
+
+- stage: 'sit'
+  displayName: 'SIT'
+  variables: 
+    - group: 'PROJECT-adf-sit'
+  jobs:
+  - job: "ADF"
+    displayName: "Atualização Data Factory SIT"
+    steps:
+
+    - task: AzurePowerShell@5
+      displayName: "Stop Triggers"
+      inputs:
+        azureSubscription: 'reg-dev-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'build/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        azurePowerShellVersion: 'LatestVersion'
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'ARM Template deployment: Resource Group scope'
+      inputs:
+        azureResourceManagerConnection: 'reg-dev-br-PROJECT (SPN)'
+        subscriptionId: '$(SUBSCRIPTION_ID)'
+        resourceGroupName: 'rg-$(ENV)-br-PROJECT'
+        location: 'Brazil South'
+        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        overrideParameters: >-
+          -factoryName "adf$(ENV)brPROJECT"
+          -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
+
+    - task: AzurePowerShell@5
+      displayName: "Start Triggers"
+      inputs:
+        azureSubscription: 'reg-dev-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'Pipelines/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        azurePowerShellVersion: 'LatestVersion'
+
+
+- stage: 'uat'
+  displayName: 'UAT'
+  variables: 
+    - group: 'PROJECT-adf-uat'
+  jobs:
+  - job: "ADF"
+    displayName: "Atualização Data Factory UAT"
+    steps:
+
+    - task: AzurePowerShell@5
+      displayName: "Stop Triggers"
+      inputs:
+        azureSubscription: 'reg-prd-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'build/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        azurePowerShellVersion: 'LatestVersion'
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'ARM Template deployment: Resource Group scope'
+      inputs:
+        azureResourceManagerConnection: 'reg-prd-br-PROJECT (SPN)'
+        subscriptionId: '$(SUBSCRIPTION_ID)'
+        resourceGroupName: 'rg-$(ENV)-br-PROJECT'
+        location: 'Brazil South'
+        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        overrideParameters: >-
+          -factoryName "adf$(ENV)brPROJECT"
+          -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
+
+    - task: AzurePowerShell@5
+      displayName: "Start Triggers"
+      inputs:
+        azureSubscription: 'reg-prd-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'build/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        azurePowerShellVersion: 'LatestVersion'
+
+
+- stage: 'prd'
+  displayName: 'PRD'
+  variables: 
+    - group: 'PROJECT-adf-prd'
+  jobs:
+  - deployment: GetApprovals
+    displayName: "Get Business Owner approval"
+    environment: 'PROJECT-prd'
+    strategy:
+        runOnce:
+          deploy:
+              steps:
+              - script: echo "Approved"
+  - job: "ADF"
+    displayName: "Atualização Data Factory PRD"
+    steps:
+
+    - task: AzurePowerShell@5
+      displayName: "Stop Triggers"
+      inputs:
+        azureSubscription: 'reg-prd-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'build/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        azurePowerShellVersion: 'LatestVersion'
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'ARM Template deployment: Resource Group scope'
+      inputs:
+        azureResourceManagerConnection: 'reg-prd-br-PROJECT (SPN)'
+        subscriptionId: '$(SUBSCRIPTION_ID)'
+        resourceGroupName: 'rg-$(System.StageName)-br-PROJECT'
+        location: 'Brazil South'
+        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        overrideParameters: >-
+          -factoryName "adf$(ENV)brPROJECT"
+          -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
+
+    - task: AzurePowerShell@5
+      displayName: "Start Triggers"
+      inputs:
+        azureSubscription: 'reg-prd-br-PROJECT (SPN)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'build/PrePostDeployment.ps1'
+        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        azurePowerShellVersion: 'LatestVersion'
