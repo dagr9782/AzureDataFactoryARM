@@ -16,7 +16,7 @@ stages:
 - stage: 'sit'
   displayName: 'SIT'
   variables: 
-    - group: 'PROJECT-adf-sit'
+    - group: 'PROJECT-adf-sit' # Nome da Library
   jobs:
   - job: "ADF"
     displayName: "Atualização Data Factory SIT"
@@ -25,10 +25,10 @@ stages:
     - task: AzurePowerShell@5
       displayName: "Stop Triggers"
       inputs:
-        azureSubscription: 'reg-dev-br-PROJECT (SPN)'
+        azureSubscription: 'reg-dev-br-PROJECT (SPN)' # Nome da Service Connection
         ScriptType: 'FilePath'
         ScriptPath: 'build/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $true -deleteDeployment $false'
         azurePowerShellVersion: 'LatestVersion'
 
     - task: AzureResourceManagerTemplateDeployment@3
@@ -38,27 +38,27 @@ stages:
         subscriptionId: '$(SUBSCRIPTION_ID)'
         resourceGroupName: 'rg-$(ENV)-br-PROJECT'
         location: 'Brazil South'
-        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
-        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        csmFile: 'adf-dev-br-PROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adf-dev-brPROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
-          -factoryName "adf$(ENV)brPROJECT"
+          -factoryName "adf-$(ENV)-br-PROJECT"
           -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
 
     - task: AzurePowerShell@5
       displayName: "Start Triggers"
       inputs:
-        azureSubscription: 'reg-dev-br-PROJECT (SPN)'
+        azureSubscription: 'reg-dev-br-PROJECT (SPN)' # Nome da Service Connection
         ScriptType: 'FilePath'
         ScriptPath: 'Pipelines/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $false -deleteDeployment $true'
         azurePowerShellVersion: 'LatestVersion'
 
 
 - stage: 'uat'
   displayName: 'UAT'
   variables: 
-    - group: 'PROJECT-adf-uat'
+    - group: 'PROJECT-adf-uat'  # Nome da Library
   jobs:
   - job: "ADF"
     displayName: "Atualização Data Factory UAT"
@@ -67,10 +67,10 @@ stages:
     - task: AzurePowerShell@5
       displayName: "Stop Triggers"
       inputs:
-        azureSubscription: 'reg-prd-br-PROJECT (SPN)'
+        azureSubscription: 'reg-prd-br-PROJECT (SPN)' # Nome da Service Connection
         ScriptType: 'FilePath'
         ScriptPath: 'build/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $true -deleteDeployment $false'
         azurePowerShellVersion: 'LatestVersion'
 
     - task: AzureResourceManagerTemplateDeployment@3
@@ -80,10 +80,10 @@ stages:
         subscriptionId: '$(SUBSCRIPTION_ID)'
         resourceGroupName: 'rg-$(ENV)-br-PROJECT'
         location: 'Brazil South'
-        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
-        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        csmFile: 'adf-dev-br-PROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adf-dev-brPROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
-          -factoryName "adf$(ENV)brPROJECT"
+          -factoryName "adf-$(ENV)-br-PROJECT"
           -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
 
@@ -93,14 +93,14 @@ stages:
         azureSubscription: 'reg-prd-br-PROJECT (SPN)'
         ScriptType: 'FilePath'
         ScriptPath: 'build/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $false -deleteDeployment $true'
         azurePowerShellVersion: 'LatestVersion'
 
 
 - stage: 'prd'
   displayName: 'PRD'
   variables: 
-    - group: 'PROJECT-adf-prd'
+    - group: 'PROJECT-adf-prd'  # Nome da Library
   jobs:
   - deployment: GetApprovals
     displayName: "Get Business Owner approval"
@@ -120,7 +120,7 @@ stages:
         azureSubscription: 'reg-prd-br-PROJECT (SPN)'
         ScriptType: 'FilePath'
         ScriptPath: 'build/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $true -deleteDeployment $false'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $true -deleteDeployment $false'
         azurePowerShellVersion: 'LatestVersion'
 
     - task: AzureResourceManagerTemplateDeployment@3
@@ -130,10 +130,10 @@ stages:
         subscriptionId: '$(SUBSCRIPTION_ID)'
         resourceGroupName: 'rg-$(System.StageName)-br-PROJECT'
         location: 'Brazil South'
-        csmFile: 'adfdevbrPROJECT/ARMTemplateForFactory.json'
-        csmParametersFile: 'adfdevbrPROJECT/ARMTemplateParametersForFactory.json'
+        csmFile: 'adf-dev-br-PROJECT/ARMTemplateForFactory.json'
+        csmParametersFile: 'adf-dev-brPROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
-          -factoryName "adf$(ENV)brPROJECT"
+          -factoryName "adf-$(ENV)-br-PROJECT"
           -ir-$(ENV)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(ENV)-br-PROJECT.vault.azure.net/"
 
@@ -143,5 +143,5 @@ stages:
         azureSubscription: 'reg-prd-br-PROJECT (SPN)'
         ScriptType: 'FilePath'
         ScriptPath: 'build/PrePostDeployment.ps1'
-        ScriptArguments: '-armTemplate "adfdevbrPROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf$(ENV)brPROJECT -predeployment $false -deleteDeployment $true'
+        ScriptArguments: '-armTemplate "adf-dev-br-PROJECT/ARMTemplateForFactory.json" -ResourceGroupName rg-$(ENV)-br-PROJECT -DataFactoryName adf-$(ENV)-br-PROJECT -predeployment $false -deleteDeployment $true'
         azurePowerShellVersion: 'LatestVersion'
