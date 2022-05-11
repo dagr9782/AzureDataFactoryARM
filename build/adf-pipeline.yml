@@ -42,7 +42,7 @@ stages:
         csmParametersFile: 'adf-dev-br-PROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
           -factoryName "adf-$(System.StageName)-br-PROJECT"
-          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "/subscriptions/$(SUBSCRIPTION_ID)/resourcegroups/rg-$(System.StageName)-br-dataintegration/providers/Microsoft.DataFactory/factories/adf-$(System.StageName)-br-dataintegration/integrationruntimes/ir-$(System.StageName)-br-dataintegration"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(System.StageName)-br-PROJECT.vault.azure.net/"
 
     - task: AzurePowerShell@5
@@ -84,7 +84,7 @@ stages:
         csmParametersFile: 'adf-dev-br-PROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
           -factoryName "adf-$(System.StageName)-br-PROJECT"
-          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "/subscriptions/$(SUBSCRIPTION_ID)/resourcegroups/rg-$(System.StageName)-br-dataintegration/providers/Microsoft.DataFactory/factories/adf-$(System.StageName)-br-dataintegration/integrationruntimes/ir-$(System.StageName)-br-dataintegration"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(System.StageName)-br-PROJECT.vault.azure.net/"
 
     - task: AzurePowerShell@5
@@ -134,7 +134,7 @@ stages:
         csmParametersFile: 'adf-dev-br-PROJECT/ARMTemplateParametersForFactory.json'
         overrideParameters: >-
           -factoryName "adf-$(System.StageName)-br-PROJECT"
-          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "$(LINKEDINTEGRATIONRUNTIME)"
+          -ir-$(System.StageName)-br-PROJECT_properties_typeProperties_linkedInfo_resourceId "/subscriptions/$(SUBSCRIPTION_ID)/resourcegroups/rg-$(System.StageName)-br-dataintegration/providers/Microsoft.DataFactory/factories/adf-$(System.StageName)-br-dataintegration/integrationruntimes/ir-$(System.StageName)-br-dataintegration"
           -KV_PROJECT_properties_typeProperties_baseUrl "https://akv-$(System.StageName)-br-PROJECT.vault.azure.net/"
 
     - task: AzurePowerShell@5
