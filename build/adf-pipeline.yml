@@ -6,6 +6,14 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+- name: stopOnly
+  displayName: "Only stop the triggers?"
+  default: false
+  values:
+    - true
+    - false
+
 # Variáveis
 variables:
 
@@ -33,6 +41,7 @@ stages:
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'ARM Template deployment: Resource Group scope'
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureResourceManagerConnection: 'reg-dev-br-PROJECT (SPN)'
         subscriptionId: '$(SUBSCRIPTION_ID)'
@@ -47,6 +56,7 @@ stages:
 
     - task: AzurePowerShell@5
       displayName: "Start Triggers"
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureSubscription: 'reg-dev-br-PROJECT (SPN)' # Nome da Service Connection
         ScriptType: 'FilePath'
@@ -75,6 +85,7 @@ stages:
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'ARM Template deployment: Resource Group scope'
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureResourceManagerConnection: 'reg-prd-br-PROJECT (SPN)'
         subscriptionId: '$(SUBSCRIPTION_ID)'
@@ -89,6 +100,7 @@ stages:
 
     - task: AzurePowerShell@5
       displayName: "Start Triggers"
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureSubscription: 'reg-prd-br-PROJECT (SPN)'
         ScriptType: 'FilePath'
@@ -125,6 +137,7 @@ stages:
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'ARM Template deployment: Resource Group scope'
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureResourceManagerConnection: 'reg-prd-br-PROJECT (SPN)'
         subscriptionId: '$(SUBSCRIPTION_ID)'
@@ -139,6 +152,7 @@ stages:
 
     - task: AzurePowerShell@5
       displayName: "Start Triggers"
+      condition: eq('${{ parameters.stopOnly }}', false)
       inputs:
         azureSubscription: 'reg-prd-br-PROJECT (SPN)'
         ScriptType: 'FilePath'
