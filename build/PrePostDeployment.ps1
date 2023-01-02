@@ -205,11 +205,11 @@ else {
     $linkedservicesNames = $linkedservicesTemplate | ForEach-Object {$_.name.Substring(37, $_.name.Length-40)}
     $deletedlinkedservices = $linkedservicesADF | Where-Object { $linkedservicesNames -notcontains $_.Name }
     #Integrationruntimes
-    Write-Host "Getting integration runtimes"
-    $integrationruntimesADF = Get-AzDataFactoryV2IntegrationRuntime -DataFactoryName $DataFactoryName -ResourceGroupName $ResourceGroupName
-    $integrationruntimesTemplate = $resources | Where-Object { $_.type -eq "Microsoft.DataFactory/factories/integrationruntimes" }
-    $integrationruntimesNames = $integrationruntimesTemplate | ForEach-Object {$_.name.Substring(37, $_.name.Length-40)}
-    $deletedintegrationruntimes = $integrationruntimesADF | Where-Object { $integrationruntimesNames -notcontains $_.Name }
+    #Write-Host "Getting integration runtimes"
+    #$integrationruntimesADF = Get-AzDataFactoryV2IntegrationRuntime -DataFactoryName $DataFactoryName -ResourceGroupName $ResourceGroupName
+    #$integrationruntimesTemplate = $resources | Where-Object { $_.type -eq "Microsoft.DataFactory/factories/integrationruntimes" }
+    #$integrationruntimesNames = $integrationruntimesTemplate | ForEach-Object {$_.name.Substring(37, $_.name.Length-40)}
+    #$deletedintegrationruntimes = $integrationruntimesADF | Where-Object { $integrationruntimesNames -notcontains $_.Name }
 
     #Delete resources
     Write-Host "Deleting triggers"
@@ -249,11 +249,11 @@ else {
         Write-Host "Deleting Linked Service " $_.Name
         Remove-AzDataFactoryV2LinkedService -Name $_.Name -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName -Force 
     }
-    Write-Host "Deleting integration runtimes"
-    $deletedintegrationruntimes | ForEach-Object { 
-        Write-Host "Deleting integration runtime " $_.Name
+    #Write-Host "Deleting integration runtimes"
+    #$deletedintegrationruntimes | ForEach-Object { 
+        #Write-Host "Deleting integration runtime " $_.Name
         #Remove-AzDataFactoryV2IntegrationRuntime -Name $_.Name -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName -Force 
-    }
+    #}
 
     if ($deleteDeployment -eq $true) {
         Write-Host "Deleting ARM deployment ... under resource group: " $ResourceGroupName
